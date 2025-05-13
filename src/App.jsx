@@ -7,8 +7,8 @@ import Section from './components/Section';
 import Panel from './components/Panel';
 import gsap from 'gsap';
 
-// Import the data
-import { section1Data, section2Data } from './data';
+// Import the data for all grid sections
+import { section1Data, section2Data, section3Data } from './data';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -16,73 +16,72 @@ function App() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Remove loading class once images are loaded
+  // Initial loading sequence - exactly like sample_code
   useEffect(() => {
-    // Make imagesLoaded globally available for our utils
+    // Make imagesLoaded globally available
     window.imagesLoaded = imagesLoaded;
     
     // Add loading class to body
     document.body.classList.add('loading');
     
-    // Preload all background images and regular images
-    Promise.all([
-      preloadImages('.grid__item-image'), // Grid images
-      preloadImages('img')                // Any regular images
-    ]).then(() => {
+    // Preload all images - exactly like sample_code preloadImages
+    preloadImages('.grid__item-image, .panel__img').then(() => {
       // Remove loading class and update state
       document.body.classList.remove('loading');
       setLoading(false);
       
-      // Add brief delay for a smoother initial reveal
+      // Init animation with delay - similar to sample_code init
       setTimeout(() => {
-        document.querySelectorAll('.grid__item').forEach((item, index) => {
-          // Stagger the initial appearance of grid items
-          gsap.fromTo(item, 
-            { opacity: 0, y: 20 },
-            { 
-              opacity: 1, 
-              y: 0, 
-              duration: 0.6,
-              delay: index * 0.05,
-              ease: 'power1.out' 
-            }
-          );
+        const gridItems = document.querySelectorAll('.grid__item');
+        
+        // Reset all grid items before animating them in
+        gsap.set(gridItems, { clipPath: 'none', opacity: 0, scale: 0.8 });
+        
+        // Animate them in one by one
+        gridItems.forEach((item, index) => {
+          gsap.to(item, {
+            opacity: 1, 
+            scale: 1,
+            duration: 0.6,
+            delay: index * 0.05,
+            ease: 'power1.out'
+          });
         });
       }, 400);
     }).catch(error => {
       console.error('Error preloading images:', error);
-      // Remove loading class even on error
       document.body.classList.remove('loading');
       setLoading(false);
     });
   }, []);
 
+  // Handle item click - similar to sample_code onGridItemClick
   const handleItemClick = (item) => {
     if (isPanelOpen || isAnimating) return;
     setCurrentItem(item);
     setIsPanelOpen(true);
   };
 
+  // Handle panel close - similar to sample_code resetView
   const handlePanelClose = () => {
-    if (isAnimating) return; 
+    if (isAnimating) return;
     setIsPanelOpen(false);
-    // Add a small delay before clearing the current item
-    // to allow for smooth animation
     setTimeout(() => {
-    setCurrentItem(null);
+      setCurrentItem(null);
     }, 500);
   };
 
+  // Show nothing while loading - exactly like sample_code
   if (loading) {
-    return null; // Show nothing while loading, body has loading indicators
+    return null;
   }
 
   return (
-    <main>
+    <main className="p-6">
       <Header />
       
       <Section 
-        title="SHANE WEBER" 
+        title="Shane Weber" 
         subtitle="effect 01: straight linear paths, smooth easing, clean timing, minimal rotation."
         items={section1Data}
         onItemClick={handleItemClick}
@@ -94,14 +93,28 @@ function App() {
         items={section2Data}
         onItemClick={handleItemClick}
       />
+      
+      <Section 
+        title="Desiree Telles" 
+        subtitle="effect 03: Diagonal paths, bouncy easing, clip from side, blend modes."
+        items={section3Data}
+        onItemClick={handleItemClick}
+      />
 
       <Panel 
         isOpen={isPanelOpen} 
         item={currentItem} 
         onClose={handlePanelClose} 
-        isAnimating={isAnimating}
-        setIsAnimating={setIsAnimating} 
       />
+      
+      <footer className="frame frame--footer flex justify-between items-end min-h-[300px]">
+        <span>
+          Made by <a href="https://codrops.com/" className="line">@codrops</a>
+        </span>
+        <span>
+          <a href="https://tympanus.net/codrops/demos/" className="line">All demos</a>
+        </span>
+      </footer>
     </main>
   );
 }
