@@ -13,9 +13,6 @@ export const preloadImages = (selector = 'img') => {
   });
 };
 
-// Linear interpolation
-export const lerp = (a, b, t) => a + (b - a) * t;
-
 // Get element center coordinates
 export const getElementCenter = (el) => {
   const rect = el.getBoundingClientRect();
@@ -24,12 +21,6 @@ export const getElementCenter = (el) => {
     y: rect.top + rect.height / 2,
   };
 };
-
-// Clamp a value between min and max
-export const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-
-// Generate a random number between min and max
-export const random = (min, max) => Math.random() * (max - min) + min;
 
 // Check if device is touch enabled
 export const isTouchDevice = () => {
